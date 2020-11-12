@@ -2,7 +2,6 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { Content as PageContent, Nav as PageNav } from '@rsuite/document-nav';
 import { on } from 'dom-lib';
-import canUseDOM from 'dom-lib/lib/query/canUseDOM';
 import { Row, Col } from 'rsuite';
 import TypesDrawer from '../TypesDrawer';
 import AppContext from '../AppContext';
@@ -18,9 +17,6 @@ interface ContainerProps {
 export default function PageContainer(props: ContainerProps) {
   const { children, designHash: designHashConfig = {}, routerId, hidePageNav, ...rest } = props;
   const [openTypesDrawer, setOpenTypesDrawer] = React.useState<boolean>();
-  // Resolve server render is not same with the client problem.
-  // reference https://itnext.io/tips-for-server-side-rendering-with-react-e42b1b7acd57
-  const [ssrDone, setSsrDone] = React.useState(false);
 
   const onDocumentClick = React.useCallback(e => {
     const href = e.target?.getAttribute('href');
@@ -38,10 +34,6 @@ export default function PageContainer(props: ContainerProps) {
     };
   }, []);
 
-  React.useEffect(() => {
-    setSsrDone(canUseDOM);
-  }, [canUseDOM]);
-
   const {
     theme: [themeName, direction]
   } = React.useContext(AppContext);
@@ -55,7 +47,7 @@ export default function PageContainer(props: ContainerProps) {
 
   return (
     <>
-      <Row {...rest} className={classes} key={ssrDone ? 'client' : 'server'}>
+      <Row {...rest} className={classes}>
         <Col md={24} xs={24} sm={24} className="main-container">
           <PageContent>{children}</PageContent>
         </Col>
